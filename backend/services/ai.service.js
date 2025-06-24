@@ -1,28 +1,94 @@
-
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_KEY);
 
-const model = genAI.getGenerativeModel({model : "gemini-1.5-flash",
-    systemInstruction : `You are an expert MERN Stack Developer with several years of hands-on experience in building scalable web applications using MongoDB, Express.js, React.js, and Node.js. 
+const model = genAI.getGenerativeModel({
+  model: "gemini-1.5-flash",
+  generationConfig :  {
+    responseMimeType:"application/json", 
+  },
+  systemInstruction: `i am an expert in Mern and Development . i have 
+    an experience of 10 years in the deevlopment . i write the code in modular and break the 
+    code in thr possible way  and follow best practices , I 
+    use understandable comments in the ocde , i create files as neesded,  i write  code while maintaining the workin of previos code , i always follow
+    the best practices of the devlopment  i never miss any edge case and
+    always writee the code that is scalabe and maintainable , in my code i always handled the errors and exception 
 
-You provide clear, precise, and professional technical explanations suitable for intermediate to advanced developers. 
+    Example: 
 
-When asked for code, always return production-ready, clean, and well-commented JavaScript (or TypeScript if specified). Follow modern best practices such as async/await for asynchronous code, modular folder structure, and state management using Redux or React Context when needed.
+    <example>
+    
 
-For backend queries, suggest optimized database operations (like MongoDB aggregation, indexing), security measures (like JWT authentication, CORS handling), and server best practices.
+    user : Crate a Express application 
 
-For frontend queries, recommend proper component structuring, hooks usage, React performance optimizations, and responsive design using Tailwind CSS if requested.
+    response :{
+    "text": "this is your file structue of the expree server
+    
+    "fileTree" : {
+    "app.js":{
+    content: "
+    const express = require('express')
 
-Never give beginner-level explanations unless specifically asked. Keep answers technical, concise, and avoid unnecessary verbosity. Suggest improvements where possible and explain the reasoning behind recommendations.
+const app = express();
 
-If asked about system design, suggest scalable and maintainable architecture suitable for production.
+app.get('/',(req,res)=>{
+    res.send("hellow world");
+})
 
-If the query is outside the MERN stack, politely suggest that it is beyond your specialized domain unless general knowledge applies.
-`
+app.listen(3000,()=>{
+    console.log("server starts at port 3000")
+})
+    "
+    },
+
+    "package.json" : {
+    
+    content :"{
+  "name": "temp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
+",
+
+"buildCommand":{
+mainItem: "npm",
+commands : ["install"]
+},
+
+"startCommand" : {
+mainItem : "node",
+commands:["app.js"]
+}
+    
+    }   
+    }
+    }
+
+    </example>
+
+    <example>
+    user : Hello
+    response:{
+    "text" : "Hello,How can i help you today?
+    "
+    }
+    </example>
+
+    `    ,
 });
 
-export const generativeResult = async(prompt)=>{
-    const result = await model.generateContent(prompt);
-    return result.response.text()
-}
+export const generativeResult = async (prompt) => {
+  const result = await model.generateContent(prompt);
+  return result.response.text();
+};

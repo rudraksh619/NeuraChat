@@ -18,7 +18,18 @@ const Project = () => {
   const [message, setmessage] = useState("");
   const { user } = useContext(UserContext);
   const [receiveMessSage,setreceiveMessage] = useState([]);
+  const[fileTree,setfileTree] = useState({
+    "app.js": {
+      content : `const express = require('express');`
+    },
 
+    "package.json" : {
+      content:`{
+      "name" : "temp-server",
+      }`
+    } 
+
+  })
   useEffect(() => {
     axios
       .get(`/projects/get_project/${location.state.item._id}`)
@@ -161,6 +172,17 @@ const Project = () => {
   function scrolltobottom() {
     messagebox.current.scrollTop = messagebox.current.scrollHeight;
   }
+
+function appendAiMessage(messageObject)
+{
+  const AImessage = JSON.parse(messageObject);
+  return (
+     <div className=" p-2 rounded-2xl overflow-auto max-w-96 text-white bg-black ">
+                    <Markdown>{AImessage.text}</Markdown> 
+                </div>
+  )
+}
+
   return (
     <main className="h-screen w-screen  bg-black">
       <section className="left_Section relative flex flex-col h-screen max-w-96  bg-slate-300">
@@ -197,9 +219,7 @@ const Project = () => {
                 return (<div className= {`m-1 flex flex-col bg-slate-200  p-2 rounded-2xl ${mssg.sender.email === 'AI'? "max-w-96" : "max-w-64"}`}>
                   <small className="font-medium text-black">{mssg.sender.email}</small>
                 {mssg.sender.email == 'AI' ? 
-                <div className=" p-2 rounded-2xl overflow-auto max-w-96 text-white bg-black ">
-                    <Markdown>{mssg.message}</Markdown> 
-                </div>
+               appendAiMessage(mssg.message)
               
                 : <p>{mssg.message}</p>}
                 </div>)
