@@ -7,6 +7,10 @@ import { creating_socket, receiveMessage, sendMessage } from "../src/socket.js";
 import { useContext } from "react";
 import Markdown from "markdown-to-jsx";
 import { useRef } from "react";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
+
+
 
 const Project = () => {
   const location = useLocation();
@@ -17,19 +21,10 @@ const Project = () => {
   const [project, setproject] = useState(location.state.item);
   const [message, setmessage] = useState("");
   const { user } = useContext(UserContext);
+  const[selectedfile,setselectedfile] = useState(null);
   const [receiveMessSage,setreceiveMessage] = useState([]);
-  const[fileTree,setfileTree] = useState({
-    "app.js": {
-      content : `const express = require('express');`
-    },
-
-    "package.json" : {
-      content:`{
-      "name" : "temp-server",
-      }`
-    } 
-
-  })
+  const[openfile,setopenfile] = useState([]);
+  const[fileTree,setfileTree] = useState({})
   useEffect(() => {
     axios
       .get(`/projects/get_project/${location.state.item._id}`)
@@ -54,11 +49,24 @@ const Project = () => {
       );
       const socket = creating_socket(project._id);
 
-      const handler = (data)=>{
-        console.log("🔥 Message received on frontend:", data);
-        setreceiveMessage((prev) => [...prev,data])
-       
-      }
+      const handler = (data) => {
+  try {
+    console.log("Raw socket data:", data.message); // ✅ log before parsing
+    const parsed = JSON.parse(data.message);
+
+    if (parsed.fileTree) {
+      setfileTree(parsed.fileTree);
+      setopenfile([]);
+    }
+
+    console.log("🔥 Message received on frontend:", parsed);
+    setreceiveMessage((prev) => [...prev, data]);
+
+  } catch (err) {
+    console.error("❌ JSON parsing error:", err.message);
+    console.error("Offending message:", data.message);
+  }
+};
 
      
 
@@ -98,49 +106,6 @@ const Project = () => {
     appendoutgoingmessage();
   }
   const messagebox = useRef(null);
-
-  // function appendMessage(Messageobject) {
-  //   console.log("Append meesage is called");
-  //   const MessageBox = document.querySelector(".message-section");
-  //   const new_div = document.createElement("div");
-  //   new_div.classList.add(
-  //     "message",
-  //     "bg-slate-100",
-  //     "rounded-md",
-  //     "m-5",
-  //     "p-2",
-  //     "max-w-64",
-  //     "flex",
-  //     "flex-col",
-  //     "gap-1"
-  //   );
-   
-  //   if(Messageobject.sender._id == 'ai')
-  //   {
-  //     const markdown = <Markdown>{Messageobject.sender._id}</Markdown>
-  //          new_div.innerHTML = `
-  //  <small
-  //           class='opacity-65 text-xs'
-  //            >${Messageobject.sender.email}</small>
-  //           <p class='text-[0.9rem]'>${markdown}</p>
-  // `;
-  //   }
-  //   else{
-  //          new_div.innerHTML = `
-  //  <small
-  //           class='opacity-65 text-xs'
-  //            >${Messageobject.sender.email}</small>
-  //           <p class='text-[0.9rem]'>${Messageobject.message}</p>
-  // `;
-  //   }
-  
- 
-    
-
-  //   MessageBox.appendChild(new_div);
-  //   scrolltobottom();
-  // }
-
  useEffect(()=>{
         scrolltobottom();
       },[receiveMessSage])
@@ -182,10 +147,37 @@ function appendAiMessage(messageObject)
                 </div>
   )
 }
+ 
+function getLanguage(filename) {
+  const ext = filename.split(".").pop();
+  switch (ext) {
+    case "js":
+    case "jsx":
+      return "javascript";
+    case "ts":
+    case "tsx":
+      return "typescript";
+    case "json":
+      return "json";
+    case "py":
+      return "python";
+    case "html":
+      return "html";
+    case "css":
+      return "css";
+    case "java":
+      return "java";
+    case "c":
+    case "cpp":
+      return "cpp";
+    default:
+      return "text";
+  }
+}
 
   return (
-    <main className="h-screen w-screen  bg-black">
-      <section className="left_Section relative flex flex-col h-screen max-w-96  bg-slate-300">
+    <main className="h-screen w-screen flex  bg-black">
+      <section className="left_Section relative flex flex-col h-screen w-96  bg-slate-300">
         <header className="w-[100%] z-100 p-3 bg-gray-200 flex justify-between absolute top-0">
           <button
             onClick={() => {
@@ -277,6 +269,78 @@ function appendAiMessage(messageObject)
         </div>
       </section>
 
+      <section className="right_section bg-red-100 h-full flex flex-grow">
+        <div className="explorer bg-slate-200  h-full min-w-52 max-w-64">
+          {
+            Object.keys(fileTree).map((filename,indx)=>{
+              return(<div className="file_tree w-full flex flex-col p-2 my-2">
+           <button
+           onClick={()=>{
+            console.log("you just clicked")
+            setselectedfile(filename)
+           
+            if(!openfile.includes(filename))
+            {
+                setopenfile([...openfile,filename])
+            }
+         
+            
+           }}
+            className=" file_tiles rounded-md bg-slate-400 p-2 w-full">
+            <p className="font-bold w-full  cursor-pointer ">
+              {filename}
+            </p>
+           </button>
+          </div>)
+            })
+          }
+        </div>
+
+
+   {selectedfile && (
+  <div className="code_editor h-full flex flex-col flex-grow shadow-2xl bg-slate-200">
+    <div className="top flex flex-row gap-2">
+      {openfile.map((file, indx) => (
+        <button
+          key={indx}
+          onClick={() => setselectedfile(file)}
+          className={`font-bold p-2 shadow-2xl w-fit ${
+            file === selectedfile ? "bg-slate-300" : ""
+          }`}
+        >
+          {file}
+        </button>
+      ))}
+    </div>
+
+    <div className="bottom h-full bg-slate-900 flex flex-grow w-full overflow-auto">
+      {fileTree[selectedfile] && (
+        <SyntaxHighlighter
+          language={getLanguage(selectedfile)}
+          style={vscDarkPlus}
+          customStyle={{
+            flexGrow: 1,
+            width: "100%",
+            padding: "1rem",
+            fontSize: "0.9rem",
+            backgroundColor: "#1e1e1e",
+            color: "#fff",
+            borderRadius: "0.5rem",
+          }}
+          wrapLongLines
+          showLineNumbers
+        >
+          {fileTree[selectedfile].content}
+        </SyntaxHighlighter>
+      )}
+    </div>
+  </div>
+)}
+
+        
+      </section>
+
+
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
           <div className="bg-white scroll-auto rounded-lg shadow-lg w-96 max-w-full max-h-96 overflow-auto  p-6">
@@ -323,6 +387,7 @@ function appendAiMessage(messageObject)
           </div>
         </div>
       )}
+
     </main>
   );
 };

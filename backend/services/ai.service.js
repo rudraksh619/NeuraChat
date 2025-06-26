@@ -26,6 +26,7 @@ const model = genAI.getGenerativeModel({
     
     "fileTree" : {
     "app.js":{
+    file:{}
     content: "
     const express = require('express')
 
@@ -60,8 +61,10 @@ app.listen(3000,()=>{
   }
 }
 ",
+    } ,
 
-"buildCommand":{
+    },
+         "buildCommand":{
 mainItem: "npm",
 commands : ["install"]
 },
@@ -70,9 +73,6 @@ commands : ["install"]
 mainItem : "node",
 commands:["app.js"]
 }
-    
-    }   
-    }
     }
 
     </example>
