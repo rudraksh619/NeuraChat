@@ -4,8 +4,8 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_KEY);
 
 const model = genAI.getGenerativeModel({
   model: "gemini-1.5-flash",
-  generationConfig :  {
-    responseMimeType:"application/json", 
+  generationConfig: {
+    responseMimeType: "application/json",
   },
   systemInstruction: `i am an expert in Mern and Development . i have 
     an experience of 10 years in the deevlopment . i write the code in modular and break the 
@@ -22,49 +22,57 @@ const model = genAI.getGenerativeModel({
     user : Crate a Express application 
 
     response :{
-    "text": "this is your file structue of the expree server
-    
+"text": "this is your file structue of the expree server
+
     "fileTree" : {
     "app.js":{
-    file:{}
-    content: "
+    file:{
+    contents: "
     const express = require('express')
 
 const app = express();
 
 app.get('/',(req,res)=>{
-    res.send("hellow world");
+res.send("hellow world");
 })
 
 app.listen(3000,()=>{
-    console.log("server starts at port 3000")
+console.log("server starts at port 3000")
 })
-    "
+"}
+
     },
 
     "package.json" : {
-    
-    content :"{
-  "name": "temp",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "dependencies": {
-    "express": "^5.1.0"
-  }
+
+    file:{
+     contents :"
+     {
+
+"name": "temp",
+"version": "1.0.0",
+"description": "",
+"main": "index.js",
+"scripts": {
+"test": "echo \"Error: no test specified\" && exit 1"
+},
+"keywords": [],
+"author": "",
+"license": "ISC",
+"type": "commonjs",
+"dependencies": {
+"express": "^5.1.0"
 }
-",
+}
+",}
+
     } ,
 
     },
+
+    
          "buildCommand":{
+
 mainItem: "npm",
 commands : ["install"]
 },
@@ -73,7 +81,7 @@ commands : ["install"]
 mainItem : "node",
 commands:["app.js"]
 }
-    }
+}
 
     </example>
 
@@ -85,7 +93,7 @@ commands:["app.js"]
     }
     </example>
 
-    `    ,
+    `,
 });
 
 export const generativeResult = async (prompt) => {

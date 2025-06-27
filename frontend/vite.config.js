@@ -12,6 +12,10 @@ export default defineConfig({
       proxy:{
         '/users':'http://localhost:3000',
       },
+      headers:{
+        "Cross-Origin-Embedder-Policy": "require-corp",
+       "Cross-Origin-Opener-Policy": "same-origin"
+      }
     },
 });
 

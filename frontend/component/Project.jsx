@@ -10,7 +10,7 @@ import { useRef } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 
-
+import {getwebcontainer} from "../src/config/webcontainer"
 
 const Project = () => {
   const location = useLocation();
@@ -25,7 +25,10 @@ const Project = () => {
   const [receiveMessSage,setreceiveMessage] = useState([]);
   const[openfile,setopenfile] = useState([]);
   const[fileTree,setfileTree] = useState({})
+ const [webContainer,setwebContainer] = useState(null);
+
   useEffect(() => {
+
     axios
       .get(`/projects/get_project/${location.state.item._id}`)
       .then((res) => {
@@ -53,9 +56,10 @@ const Project = () => {
   try {
     console.log("Raw socket data:", data.message); // ✅ log before parsing
     const parsed = JSON.parse(data.message);
-
+    console.log("parsed_datta :" , parsed)
     if (parsed.fileTree) {
       setfileTree(parsed.fileTree);
+      webContainer.mount(parsed?.fileTree)
       setopenfile([]);
     }
 
@@ -63,8 +67,9 @@ const Project = () => {
     setreceiveMessage((prev) => [...prev, data]);
 
   } catch (err) {
-    console.error("❌ JSON parsing error:", err.message);
-    console.error("Offending message:", data.message);
+    // console.error("❌ JSON parsing error:", err.message);
+    // console.error("Offending message:", data.message);
+    console.log(err)
   }
 };
 
@@ -147,6 +152,19 @@ function appendAiMessage(messageObject)
                 </div>
   )
 }
+
+useEffect(() => {
+  console.log("crossOriginIsolated:", window.crossOriginIsolated); 
+  if (webContainer === null) {
+    getwebcontainer().then(container => {
+      setwebContainer(container);
+      console.log("✅ WebContainer created and stored in ref ",container);
+    }).catch(err => {
+      console.error("❌ Failed to get WebContainer:", err);
+    });
+  }
+}, []);
+
  
 function getLanguage(filename) {
   const ext = filename.split(".").pop();
@@ -330,7 +348,7 @@ function getLanguage(filename) {
           wrapLongLines
           showLineNumbers
         >
-          {fileTree[selectedfile].content}
+          {fileTree[selectedfile].file.contents}
         </SyntaxHighlighter>
       )}
     </div>

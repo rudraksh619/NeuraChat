@@ -4,11 +4,11 @@ import { UserProvider } from "./context/Usercontext";
 const App = () => {
   return (
     <div>
-      <React.StrictMode>
+      {/* <React.StrictMode> */}
         <UserProvider>
           <AppRoutes />
         </UserProvider>
-      </React.StrictMode>
+      {/* </React.StrictMode> */}
     </div>
   );
 };

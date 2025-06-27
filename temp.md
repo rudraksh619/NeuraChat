@@ -1,1 +1,61 @@
-{"text": "This is the file structure for a basic Express server.", "fileTree": {"app.js": {"content": "const express = require('express');\nconst app = express();\n\napp.get('/', (req, res) => {\n  res.send('Hello from Express!');\n});\n\nconst port = process.env.PORT || 3000;\napp.listen(port, () => {\n  console.log(`Server listening on port ${port}`);\n});"}, "package.json": {"content": "{\n  \"name\": \"express-server\",\n  \"version\": \"1.0.0\",\n  \"description\": \"A basic Express server\",\n  \"main\": \"app.js\",\n  \"scripts\": {\n    \"start\": \"node app.js\"\n  },\n  \"dependencies\": {\n    \"express\": \"^4.18.2\"\n  }\n}"}}}
+response :{
+"text": "this is your file structue of the expree server
+
+    "fileTree" : {
+    "app.js":{
+    file:{
+    contents: "
+    const express = require('express')
+
+const app = express();
+
+app.get('/',(req,res)=>{
+res.send("hellow world");
+})
+
+app.listen(3000,()=>{
+console.log("server starts at port 3000")
+})
+"}
+
+    },
+
+    "package.json" : {
+
+    file:{
+     contents :"
+     {
+
+"name": "temp",
+"version": "1.0.0",
+"description": "",
+"main": "index.js",
+"scripts": {
+"test": "echo \"Error: no test specified\" && exit 1"
+},
+"keywords": [],
+"author": "",
+"license": "ISC",
+"type": "commonjs",
+"dependencies": {
+"express": "^5.1.0"
+}
+}
+",}
+
+    } ,
+
+    },
+
+    
+         "buildCommand":{
+
+mainItem: "npm",
+commands : ["install"]
+},
+
+"startCommand" : {
+mainItem : "node",
+commands:["app.js"]
+}
+}
