@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@uiw/react-textarea-code-editor": "^3.1.1"
+  }
+}

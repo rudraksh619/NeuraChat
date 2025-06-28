@@ -92,3 +92,25 @@ export const getProjectsById = async (req,res)=>{
     }
    
 }
+
+
+export const updateFileTree = async (req,res)=>{
+    const err= validationResult(req);
+    if(!err.isEmpty()){
+        return res.status(400).json({errors:err.array()});
+    }
+
+
+    try {
+        const {project_id,fileTree} = req.body;
+        const updateProject = await createProjectservices.updateFileTree({project_id,fileTree})
+
+        return res.status(200).json({updateProject})
+    } catch (error) {
+        return res.status(400).json({err:error.message})
+    }
+    
+
+
+
+}

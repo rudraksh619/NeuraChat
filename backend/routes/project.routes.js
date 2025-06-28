@@ -11,7 +11,7 @@ router.post('/create',
 
 )
 router.get('/getall',authmiddleware.checkauth,projectController.getProjects);
-export default router;
+
 
 router.put('/add-user',
     authmiddleware.checkauth,
@@ -26,3 +26,12 @@ projectController.add_user_to_project)
 router.get('/get_project/:project_Id',
     authmiddleware.checkauth,
 projectController.getProjectsById) 
+
+router.put('/update-file-tree',authmiddleware.checkauth,
+    body('project_id').isString().withMessage('Project Id is required'),
+    body('fileTree').isObject().withMessage("file Tree is requoired"),
+    projectController.updateFileTree
+
+ )
+
+ export default router;

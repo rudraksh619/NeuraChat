@@ -90,3 +90,26 @@ export const getProjectById = async ({project_id}) => {
 
     return project ;
 }
+export const updateFileTree = async ({ project_id, fileTree }) => {
+    if (!project_id) {
+        throw new Error("project_id is required");
+    }
+    if (!mongoose.Types.ObjectId.isValid(project_id)) {
+        throw new Error("Invalid project_id");
+    }
+    if (!fileTree) {
+        throw new Error("fileTree is required");
+    }
+
+    const updatedProject = await projectModel.findOneAndUpdate(
+        { _id: project_id },
+        { $set: { fileTree } },
+        { new: true }
+    );
+
+    if (!updatedProject) {
+        throw new Error("Project not found");
+    }
+
+    return updatedProject;
+};

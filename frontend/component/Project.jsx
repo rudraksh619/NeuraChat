@@ -9,6 +9,7 @@ import Markdown from "markdown-to-jsx";
 import { useRef } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
+import CodeEditor from '@uiw/react-textarea-code-editor';
 
 import {getwebcontainer} from "../src/config/webcontainer"
 
@@ -25,14 +26,16 @@ const Project = () => {
   const [receiveMessSage,setreceiveMessage] = useState([]);
   const[openfile,setopenfile] = useState([]);
   const[fileTree,setfileTree] = useState({})
+  const[runProcess,setrunProcess] = useState(null);
  const [webContainer,setwebContainer] = useState(null);
-
+ const [iframeurl,setiframeurl] = useState(null);
   useEffect(() => {
 
     axios
       .get(`/projects/get_project/${location.state.item._id}`)
       .then((res) => {
         setproject(res.data.project);
+        setfileTree(res.data.project.fileTree || {})
       })
       .catch((err) => console.log(err));
 
@@ -146,6 +149,7 @@ const Project = () => {
 function appendAiMessage(messageObject)
 {
   const AImessage = JSON.parse(messageObject);
+  console.log("ai message",AImessage);
   return (
      <div className=" p-2 rounded-2xl overflow-auto max-w-96 text-white bg-black ">
                     <Markdown>{AImessage.text}</Markdown> 
@@ -167,6 +171,8 @@ useEffect(() => {
 
  
 function getLanguage(filename) {
+  if (!filename) return "text"; // ✅ handle null or undefined filename
+
   const ext = filename.split(".").pop();
   switch (ext) {
     case "js":
@@ -191,6 +197,16 @@ function getLanguage(filename) {
     default:
       return "text";
   }
+}
+
+function saved_fileTree(ft){
+  axios.put('/projects/update-file-tree',{
+    project_id : project._id,
+    fileTree:ft
+
+  }).then(res=>console.log(res.data)).catch((err)=>{
+    console.log(err)
+  })
 }
 
   return (
@@ -290,7 +306,7 @@ function getLanguage(filename) {
       <section className="right_section bg-red-100 h-full flex flex-grow">
         <div className="explorer bg-slate-200  h-full min-w-52 max-w-64">
           { 
-            Object.keys(fileTree).map((filename,indx)=>{
+           fileTree && typeof(fileTree)==="object" && Object.keys(fileTree).map((filename,indx)=>{
               return(<div className="file_tree w-full flex flex-col p-2 my-2">
            <button
            onClick={()=>{
@@ -336,38 +352,83 @@ function getLanguage(filename) {
       <div className="action flex gap-2">
         <button 
         onClick={async () =>{
-          await webContainer?.spawn('ls')
-        }}
+          await webContainer?.mount(fileTree)
+
+              
+     const installprocess = await webContainer.spawn("npm",["install"])
+          installprocess.output.pipeTo(new WritableStream({
+            write(chunk){
+              console.log(chunk)
+            }
+          }))
+
+          if(runProcess)
+          {
+            runProcess.kill();
+          }
+          
+     let startProcess = await webContainer.spawn("npm",["start"])
+    startProcess.output.pipeTo(new WritableStream({
+      write(chunk){
+        console.log(chunk);
+      }
+    }))
+
+    setrunProcess(startProcess);
+
+    webContainer.on('server-ready',(port,url)=>{
+      console.log(port,url);
+      setiframeurl(url);
+    })
+
+    }}
         className="p-2 w-fit bg-fuchsia-400 shadow-2xl">
-          ls
+          Run
         </button>
       </div>
     </div>
 
-    <div className="bottom h-full bg-slate-900 flex flex-grow w-full overflow-auto">
-      {fileTree[selectedfile] && (
-        <SyntaxHighlighter
-          language={getLanguage(selectedfile)}
-          style={vscDarkPlus}
-          customStyle={{
-            flexGrow: 1,
-            width: "100%",
-            padding: "1rem",
-            fontSize: "0.9rem",
-            backgroundColor: "#1e1e1e",
-            color: "#fff",
-            borderRadius: "0.5rem",
-          }}
-          wrapLongLines
-          showLineNumbers
-        >
-          {fileTree[selectedfile].file.contents}
-        </SyntaxHighlighter>
-      )}
-    </div>
+    <CodeEditor
+  value={fileTree[selectedfile]?.file.contents}
+  language={getLanguage(selectedfile)}
+  placeholder="Please enter code."
+  onChange={(e) => {
+    const updatedContent = e.target.value;
+    const ft = {
+      ...fileTree,
+      [selectedfile] : {
+        file:{
+          contents:updatedContent
+        }
+      }
+    }
+     setfileTree(ft);
+     saved_fileTree(ft);
+  }}
+  padding={15}
+  style={{
+    backgroundColor: "#1e1e1e",
+    fontFamily: 'monospace',
+    color: "white",
+    fontSize: 14,
+    height: "100%",
+    width: "100%",
+  }}
+/>
   </div>
 
+{iframeurl && webContainer && 
 
+(<div className="flex flex-col h-full min-w-96">
+  <div className="address_bar">
+    <input type="text" 
+    onChange={(e)=>{setiframeurl(e.target.value)}}
+    value={iframeurl} className="w-full p-2 px-4 bg-slate-200"/>
+  </div>
+  <iframe src={iframeurl} className="w-full h-full"></iframe>
+  </div>)
+
+}
         
       </section>
 

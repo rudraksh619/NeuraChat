@@ -19,7 +19,14 @@ const projectSchema = new mongoose.Schema({
             ref:"User",
             required:true,
         }
-    ]
+    ],
+
+    fileTree : {
+        type:Object,
+        default:{}
+    },
+
+
 
 })  
 
