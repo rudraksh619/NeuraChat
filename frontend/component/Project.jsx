@@ -59,7 +59,7 @@ const Project = () => {
     console.log("parsed_datta :" , parsed)
     if (parsed.fileTree) {
       setfileTree(parsed.fileTree);
-      webContainer.mount(parsed?.fileTree)
+      webContainer.mount(parsed.fileTree)
       setopenfile([]);
     }
 
@@ -289,7 +289,7 @@ function getLanguage(filename) {
 
       <section className="right_section bg-red-100 h-full flex flex-grow">
         <div className="explorer bg-slate-200  h-full min-w-52 max-w-64">
-          {
+          { 
             Object.keys(fileTree).map((filename,indx)=>{
               return(<div className="file_tree w-full flex flex-col p-2 my-2">
            <button
@@ -315,9 +315,11 @@ function getLanguage(filename) {
         </div>
 
 
-   {selectedfile && (
+   
   <div className="code_editor h-full flex flex-col flex-grow shadow-2xl bg-slate-200">
-    <div className="top flex flex-row gap-2">
+    <div className="top flex justify-between w-full  gap-2">
+
+      <div className="files flex ">
       {openfile.map((file, indx) => (
         <button
           key={indx}
@@ -329,6 +331,17 @@ function getLanguage(filename) {
           {file}
         </button>
       ))}
+      </div>
+
+      <div className="action flex gap-2">
+        <button 
+        onClick={async () =>{
+          await webContainer?.spawn('ls')
+        }}
+        className="p-2 w-fit bg-fuchsia-400 shadow-2xl">
+          ls
+        </button>
+      </div>
     </div>
 
     <div className="bottom h-full bg-slate-900 flex flex-grow w-full overflow-auto">
@@ -353,7 +366,7 @@ function getLanguage(filename) {
       )}
     </div>
   </div>
-)}
+
 
         
       </section>

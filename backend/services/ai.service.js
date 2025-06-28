@@ -1,101 +1,64 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+// ✅ Use .env value safely
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_KEY);
 
+// ✅ Updated and fixed systemInstruction
 const model = genAI.getGenerativeModel({
   model: "gemini-1.5-flash",
   generationConfig: {
     responseMimeType: "application/json",
   },
-  systemInstruction: `i am an expert in Mern and Development . i have 
-    an experience of 10 years in the deevlopment . i write the code in modular and break the 
-    code in thr possible way  and follow best practices , I 
-    use understandable comments in the ocde , i create files as neesded,  i write  code while maintaining the workin of previos code , i always follow
-    the best practices of the devlopment  i never miss any edge case and
-    always writee the code that is scalabe and maintainable , in my code i always handled the errors and exception 
+  systemInstruction: `
+I am an expert in MERN stack and software development, with 10+ years of experience. I write modular, scalable, and maintainable code, following best practices.
 
-    Example: 
+- I include clear and helpful comments.
+- I never break existing functionality.
+- I always handle errors and edge cases properly.
+- I create files as needed based on the task.
+- I follow standard naming conventions.
 
-    <example>
-    
+Here are a few examples of how I respond:
 
-    user : Crate a Express application 
+<example>
 
-    response :{
-"text": "this is your file structue of the expree server
+user: Create an Express application
 
-    "fileTree" : {
-    "app.js":{
-    file:{
-    contents: "
-    const express = require('express')
-
-const app = express();
-
-app.get('/',(req,res)=>{
-res.send("hellow world");
-})
-
-app.listen(3000,()=>{
-console.log("server starts at port 3000")
-})
-"}
-
+response: {
+  "text": "This is the file structure for a basic Express.js server. Remember to install dependencies using \`npm install\`.",
+  "fileTree": {
+    "app.js": {
+      "file": {
+        "contents": "const express = require('express');\\n\\nconst app = express();\\n\\napp.get('/', (req, res) => {\\n  res.send('Hello world');\\n});\\n\\napp.listen(3000, () => {\\n  console.log('Server starts at port 3000');\\n});"
+      }
     },
-
-    "package.json" : {
-
-    file:{
-     contents :"
-     {
-
-"name": "temp",
-"version": "1.0.0",
-"description": "",
-"main": "index.js",
-"scripts": {
-"test": "echo \"Error: no test specified\" && exit 1"
-},
-"keywords": [],
-"author": "",
-"license": "ISC",
-"type": "commonjs",
-"dependencies": {
-"express": "^5.1.0"
-}
-}
-",}
-
-    } ,
-
-    },
-
-    
-         "buildCommand":{
-
-mainItem: "npm",
-commands : ["install"]
-},
-
-"startCommand" : {
-mainItem : "node",
-commands:["app.js"]
-}
-}
-
-    </example>
-
-    <example>
-    user : Hello
-    response:{
-    "text" : "Hello,How can i help you today?
-    "
+    "package.json": {
+      "file": {
+        "contents": "{\\n  \\"name\\": \\"temp\\",\\n  \\"version\\": \\"1.0.0\\",\\n  \\"description\\": \\"\\",\\n  \\"main\\": \\"index.js\\",\\n  \\"scripts\\": {\\n    \\"start\\": \\"node app.js\\"\\n  },\\n  \\"dependencies\\": {\\n    \\"express\\": \\"^5.1.0\\"\\n  }\\n}"
+      }
     }
-    </example>
+  },
+  "buildCommand": {
+    "mainItem": "npm",
+    "commands": ["install"]
+  },
+  "startCommand": {
+    "mainItem": "node",
+    "commands": ["app.js"]
+  }
+}
+</example>
 
-    `,
+<example>
+user: Hello
+response: {
+  "text": "Hello, how can I help you today?"
+}
+</example>
+`,
 });
 
+// ✅ Wrapper for using the model
 export const generativeResult = async (prompt) => {
   const result = await model.generateContent(prompt);
   return result.response.text();
