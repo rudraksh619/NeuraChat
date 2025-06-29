@@ -64,6 +64,7 @@ const Project = () => {
       setfileTree(parsed.fileTree);
        if (webContainer) {
     webContainer.mount(parsed.fileTree);
+    
   } else {
     console.warn("⚠️ webContainer is not ready yet.");
   }
