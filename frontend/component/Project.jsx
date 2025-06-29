@@ -62,8 +62,13 @@ const Project = () => {
     console.log("parsed_datta :" , parsed)
     if (parsed.fileTree) {
       setfileTree(parsed.fileTree);
-      webContainer.mount(parsed.fileTree)
-      setopenfile([]);
+       if (webContainer) {
+    webContainer.mount(parsed.fileTree);
+  } else {
+    console.warn("⚠️ webContainer is not ready yet.");
+  }
+
+  setopenfile([]);
     }
 
     console.log("🔥 Message received on frontend:", parsed);
