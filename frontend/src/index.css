@@ -40,3 +40,74 @@ display: none;
 .animate-softPulse {
   animation: softPulse 5s ease-in-out infinite;
 }
+
+
+@keyframes bgMove {
+  0% { background-position: 0 0; }
+  100% { background-position: 40px 40px; }
+}
+
+
+@keyframes flash {
+  0% { background-color: #ffe066; }
+  100% { background-color: inherit; }
+}
+
+.animate-flash {
+  animation: flash 1s ease-out;
+}
+
+
+@keyframes gridMove {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 40px 40px;
+  }
+}
+
+.animate-grid {
+  animation: gridMove 10s linear infinite;
+}
+
+
+/* Glowing left bar effect */
+[class*="hover:before"]::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 100%;
+  background: linear-gradient(180deg, #00ffff, #0077ff);
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  border-radius: 1rem 0 0 1rem;
+  filter: drop-shadow(0 0 6px #00f0ff);
+}
+
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+
+@keyframes slideInMessage {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.message-animate-in {
+  animation: slideInMessage 0.25s ease-out;
+}

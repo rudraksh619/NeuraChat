@@ -56,11 +56,12 @@ io.on('connection', socket => {
     socket.join(socket.roomId);
 
     socket.on('project-message',  async data=>{
-        console.log("data coming from frontend",data);   
+        console.log("from frontend",data);   
         
         const message = data.message;
         const is_ai_activate = message.includes('@ai');
-         socket.broadcast.emit('project-message', data);
+
+         socket.broadcast.to(socket.roomId).emit('project-message', data);
 
         if(is_ai_activate){
             const prompt = message.replace('@ai','')
@@ -72,7 +73,10 @@ io.on('connection', socket => {
                 email:'AI',
             }
            });
+           return;
         }
+
+        
        
     //   socket.broadcast.emit('project-message', data);
 
