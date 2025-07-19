@@ -10,7 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@monaco-editor/react": "^4.7.0",
     "@tailwindcss/vite": "^4.1.7",
+    "@uiw/react-textarea-code-editor": "^3.1.1",
     "@webcontainer/api": "^1.6.1",
     "axios": "^1.9.0",
     "dom": "^0.0.3",

@@ -12,6 +12,7 @@ import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import CodeEditor from "@uiw/react-textarea-code-editor";
 import { motion } from "framer-motion";
 import { getwebcontainer } from "../src/config/webcontainer";
+import Editor from "@monaco-editor/react";
 
 const Project = () => {
   const location = useLocation();
@@ -276,35 +277,36 @@ const Project = () => {
           </div>
         </header>
 
-        <div className="conversational-area  pt-16 pb-16  relative flex flex-col flex-grow h-full ">
+        <div className="conversational-area pt-16 pb-24 relative flex flex-col flex-grow h-full bg-gradient-to-b from-[#0f0f0f] via-[#111111] to-[#1a1a1a]">
+          <div className="bg-lightning"></div>
+
           <div
             ref={messagebox}
-            className="message-section  flex flex-grow flex-col gap-3 max-h-full overflow-auto "
+            className="message-section flex flex-grow flex-col gap-3 max-h-full overflow-auto px-3"
           >
-            {receiveMessSage.map((mssg, indx) => {
-              return (
-                <div
-                  className={`message relative bg-gray-800 text-gray-100 rounded-md p-2 m-1 max-w-64 mr-auto flex flex-col gap-1 shadow-lg message-animate-in border border-transparent bg-clip-padding before:absolute before:inset-0 before:rounded-md before:p-[2px] before:bg-gradient-to-br before:from-cyan-500 before:to-blue-600 before:content-[''] before:z-[-1] ${
-                    mssg.sender?.email === "AI" ? "max-w-96" : "max-w-64"
-                  }`}
-                >
-                  <small className="opacity-65 text-xs">
-                    {mssg.sender?.email}
-                  </small>
-
-                  {mssg.sender._id === "ai" ? (
-                    appendAiMessage(mssg.message)
-                  ) : (
-                    <p className="text-[0.9rem]">{mssg.message}</p>
-                  )}
-                </div>
-              );
-            })}
+            {receiveMessSage.map((mssg, indx) => (
+              <div
+                key={indx}
+                className={`message relative bg-black/40 backdrop-blur-md text-gray-100 rounded-lg p-3 m-1 max-w-64 shadow-md message-animate-in border border-cyan-500/20 ${
+                  mssg.sender?.email === "AI"
+                    ? "max-w-96 self-start"
+                    : "max-w-64 self-end"
+                }`}
+              >
+                <small className="opacity-50 text-xs">
+                  {mssg.sender?.email}
+                </small>
+                {mssg.sender._id === "ai" ? (
+                  appendAiMessage(mssg.message)
+                ) : (
+                  <p className="text-[0.9rem]">{mssg.message}</p>
+                )}
+              </div>
+            ))}
           </div>
 
           <div className="input-section w-full flex justify-center items-center absolute bottom-0 px-2 py-2 rounded-2xl bg-black/30 backdrop-blur-lg border-t border-white/10 z-50">
             <div className="flex w-full max-w-lg items-center bg-gradient-to-br from-[#0f0f0f]/50 to-[#1a1a1a]/60 border border-cyan-400/20 backdrop-blur-md rounded-full shadow-[0_0_12px_rgba(0,255,255,0.15)] px-3 py-1.5">
-              {/* Input */}
               <input
                 value={message}
                 onChange={(e) => setmessage(e.target.value)}
@@ -312,14 +314,10 @@ const Project = () => {
                 placeholder="Message..."
                 className="flex-grow bg-transparent text-white placeholder:text-gray-400 px-3 py-1.5 text-md focus:outline-none"
               />
-
-              {/* Send Button */}
               <button
                 onClick={send}
-                disabled={message.length == 0}
-                className={
-                  "ml-2 h-9 w-9 flex items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-[0_0_8px_rgba(0,255,255,0.3)] hover:shadow-[0_0_12px_rgba(0,255,255,0.5)] transition-all duration-200"
-                }
+                disabled={message.length === 0}
+                className="ml-2 h-9 w-9 flex items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-[0_0_8px_rgba(0,255,255,0.3)] hover:shadow-[0_0_12px_rgba(0,255,255,0.5)] transition-all duration-200"
               >
                 <i className="ri-send-plane-fill text-white text-base"></i>
               </button>
@@ -361,24 +359,34 @@ const Project = () => {
       </section>
 
       <section className="right_section bg-red-100 h-full flex flex-grow">
-        <div className="explorer bg-slate-200  h-full min-w-52 max-w-64">
+        <div className="explorer bg-gradient-to-b from-[#0f0f0f] to-[#1a1a1a] h-full min-w-52 max-w-64 border-l border-white/10 shadow-inner">
           {fileTree &&
             typeof fileTree === "object" &&
             Object.keys(fileTree).map((filename, indx) => {
+              const isSelected = selectedfile === filename;
               return (
-                <div className="file_tree w-full flex flex-col p-2 my-2">
+                <div
+                  key={indx}
+                  className="file_tree w-full flex flex-col px-3 py-1 my-1"
+                >
                   <button
                     onClick={() => {
-                      console.log("you just clicked");
                       setselectedfile(filename);
-
                       if (!openfile.includes(filename)) {
                         setopenfile([...openfile, filename]);
                       }
                     }}
-                    className=" file_tiles rounded-md bg-slate-400 p-2 w-full"
+                    className={`file_tiles rounded-md px-3 py-2 w-full text-left transition-all duration-200 ${
+                      isSelected
+                        ? "bg-gradient-to-r from-cyan-500/20 to-blue-600/20 border border-cyan-400/30 shadow-[0_0_10px_rgba(0,255,255,0.2)] text-cyan-300"
+                        : "bg-[#1f1f1f] hover:bg-[#2a2a2a] text-gray-300"
+                    }`}
                   >
-                    <p className="font-bold w-full  cursor-pointer ">
+                    <p
+                      className={`font-semibold w-full cursor-pointer tracking-wide ${
+                        isSelected ? "text-cyan-300" : ""
+                      }`}
+                    >
                       {filename}
                     </p>
                   </button>
@@ -388,26 +396,30 @@ const Project = () => {
         </div>
 
         <div className="code_editor h-full flex flex-col flex-grow shadow-2xl bg-slate-200">
-          <div className="top flex justify-between w-full  gap-2">
-            <div className="files flex ">
-              {openfile.map((file, indx) => (
-                <button
-                  key={indx}
-                  onClick={() => setselectedfile(file)}
-                  className={`font-bold p-2 shadow-2xl w-fit ${
-                    file === selectedfile ? "bg-slate-300" : ""
-                  }`}
-                >
-                  {file}
-                </button>
-              ))}
+          <div className="top flex justify-between items-center w-full gap-2 bg-gradient-to-r from-[#0f0f0f]/80 to-[#1a1a1a]/80 border-b border-white/10 shadow-[inset_0_0_20px_rgba(0,255,255,0.05)] backdrop-blur-md px-2 py-1">
+            <div className="files flex overflow-x-auto no-scrollbar">
+              {openfile.map((file, indx) => {
+                const isActive = file === selectedfile;
+                return (
+                  <button
+                    key={indx}
+                    onClick={() => setselectedfile(file)}
+                    className={`transition-all duration-200 whitespace-nowrap rounded-t-md mx-1 px-4 py-2 text-sm font-medium ${
+                      isActive
+                        ? "bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-400/30 shadow-[0_0_12px_rgba(0,255,255,0.3)] text-cyan-300"
+                        : "bg-[#1a1a1a]/70 hover:bg-[#2a2a2a] text-gray-300"
+                    }`}
+                  >
+                    {file}
+                  </button>
+                );
+              })}
             </div>
 
-            <div className="action flex gap-2">
+            <div className="action flex gap-2 items-center px-2">
               <button
                 onClick={async () => {
                   await webContainer?.mount(fileTree);
-
                   const installprocess = await webContainer.spawn("npm", [
                     "install",
                   ]);
@@ -439,40 +451,43 @@ const Project = () => {
                     setiframeurl(url);
                   });
                 }}
-                className="p-2 w-fit bg-fuchsia-400 shadow-2xl"
+                className="px-4 py-2 rounded-md text-sm font-semibold bg-gradient-to-br from-fuchsia-500 to-pink-500 text-white hover:from-fuchsia-400 hover:to-pink-400 transition-all duration-300 shadow-[0_0_10px_rgba(255,0,255,0.3)]"
               >
                 Run
               </button>
             </div>
           </div>
-
-          <CodeEditor
-            value={fileTree[selectedfile]?.file.contents}
-            language={getLanguage(selectedfile)}
-            placeholder="Please enter code."
-            onChange={(e) => {
-              const updatedContent = e.target.value;
-              const ft = {
-                ...fileTree,
-                [selectedfile]: {
-                  file: {
-                    contents: updatedContent,
+         
+         
+          <div className="code-editor-area flex-grow bg-[#1e1e1e] rounded-md overflow-hidden shadow-inner">
+            <Editor
+              height="100%"
+              language={getLanguage(selectedfile)} // You can have a function that returns 'javascript', 'html', etc.
+              value={fileTree[selectedfile]?.file.contents}
+              theme="vs-dark"
+              onChange={(value) => {
+                const ft = {
+                  ...fileTree,
+                  [selectedfile]: {
+                    file: {
+                      contents: value,
+                    },
                   },
-                },
-              };
-              setfileTree(ft);
-              saved_fileTree(ft);
-            }}
-            padding={15}
-            style={{
-              backgroundColor: "#1e1e1e",
-              fontFamily: "monospace",
-              color: "white",
-              fontSize: 14,
-              height: "100%",
-              width: "100%",
-            }}
-          />
+                };
+                setfileTree(ft);
+                saved_fileTree(ft);
+              }}
+              options={{
+                fontSize: 14,
+                minimap: { enabled: false },
+                fontFamily: "monospace",
+                lineNumbers: "on",
+                scrollBeyondLastLine: false,
+                wordWrap: "on",
+                padding: { top: 16 },
+              }}
+            />
+          </div>
         </div>
 
         {iframeurl && webContainer && (

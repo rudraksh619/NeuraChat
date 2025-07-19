@@ -111,3 +111,74 @@ display: none;
 .message-animate-in {
   animation: slideInMessage 0.25s ease-out;
 }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message-animate-in {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+.bg-lightning {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(
+    130deg,
+    rgba(0, 255, 255, 0.05) 0%,
+    rgba(0, 0, 255, 0.1) 40%,
+    rgba(0, 255, 255, 0.05) 70%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  background-size: 200% 200%;
+  animation: lightningMove 6s linear infinite;
+  filter: blur(40px);
+  opacity: 0.7;
+}
+
+@keyframes lightningMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+button {
+  transition: all 0.2s ease;
+}
+button:hover {
+  transform: scale(1.05);
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 8px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 255, 255, 0.3);
+  border-radius: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
